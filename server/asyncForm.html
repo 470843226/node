@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>异步表单提交</title>
+		<style>
+			.dialog{
+				position:fixed;
+				top:50%;
+				left:50%;
+				padding:10px;
+				border:1px solid;
+				transform:translate(-50%, -50%);
+			}
+		</style>
+	</head>
+	<body>
+		<form>
+			<input id="user" placeholder="请输入用户名" />
+			<input id="submit" type="button" value="提交" />
+		</form>
+		<script>
+			var user = document.getElementById("user"),
+				button = document.getElementById("submit");
+			button.onclick = function(){
+				// 实例化异步请求
+				var xhr = new XMLHttpRequest;
+				// xhr.readyState
+				// 0 表示请求未发送
+				// 1 表示请求已打开
+				// 2 表示请求已打开并且服务器已经接收到请求正在处理
+				// 3 表示服务器已经接收到请求并且正在向浏览器传输数据
+				// 4 表示服务器已经响应完成，但是并不一定处理成功
+
+				// 监听请求状态发生变化
+				xhr.onreadystatechange = function(){
+					// 需要对http状态码及请求状态都做判断才能确定是否服务器响应了处理成功的内容
+					if(xhr.readyState === 4 && xhr.status >= 200 && xhr.status < 300){
+						var div = document.createElement("div");
+						div.className = "dialog";
+						div.innerText = xhr.responseText;
+						document.body.appendChild(div);
+					}
+				};
+				// 打开请求
+				xhr.open("post"/*请求类型*/, "/upload"/*请求接口路径*/, 1/*是否异步*/);
+				// 设置请求头
+				xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+				// 发送请求
+				xhr.send(["user=", user.value].join(""));
+			};
+		</script>
+	</body>
+</html>
